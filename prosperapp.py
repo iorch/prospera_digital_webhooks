@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
 from flask import Flask, jsonify, url_for, stream_with_context, request, Response
 import json
