@@ -5,10 +5,16 @@ from flask import Flask, jsonify, url_for, stream_with_context, request, Respons
 import json
 import requests
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 
 #
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
+file_handler = RotatingFileHandler("../logs/prosperapp.log", maxBytes=1024 * 1024 * 100, backupCount=20)
+file_handler.setLevel(logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
+app.logger.addHandler(file_handler)
 
 @app.after_request
 def after_request(response):
@@ -29,14 +35,14 @@ def index():
 def translate_age(): 
     user_form = request.form
     #print user_form
-    print app.config['DEBUG']
-    print app.config['RAPIDPRO_TOKEN']
+    app.logger.debug(app.config['DEBUG'])
+    app.logger.debug(app.config['RAPIDPRO_TOKEN'])
     token = 'Token ' + app.config['RAPIDPRO_TOKEN']
     headers = {'Authorization': token}
     params = {'phone': user_form['phone']}
     r = requests.get('https://api.rapidpro.io/api/v1/contacts.json',
         params = params, headers = headers )
-    print stream_with_context(r)
+    app.logger.debug(stream_with_context(r))
     answer=json.dumps({'id_status': 'Valid', 'birthdate': '1992-10-30'})
     return answer
      
