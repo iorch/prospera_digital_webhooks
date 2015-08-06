@@ -11,7 +11,7 @@ from logging.handlers import RotatingFileHandler
 #
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
-file_handler = RotatingFileHandler("../logs/prosperapp.log", maxBytes=1024 * 1024 * 100, backupCount=20)
+file_handler = RotatingFileHandler("./prosperapp.log", maxBytes=1024 * 1024 * 100, backupCount=20)
 file_handler.setLevel(logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(file_handler)
