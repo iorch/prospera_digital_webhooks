@@ -2,11 +2,16 @@ language: python
 python:
   - "2.7"
 # command to install dependencies
+before_install:
+  - mysql -e "create database IF NOT EXISTS dependencia;" -uroot
+  - mysql -u root -e "USE dependencia; CREATE TABLE dependencia (dependenciaId bigint(20) NOT NULL,  ambito_id bigint(20) DEFAULT NULL,  articulo_id bigint(20) DEFAULT NULL,  descdependencia varchar(255) NOT NULL,  nomDependencia varchar(255) NOT NULL);"
+  - mysql -u root -e "USE dependencia; INSERT INTO dependencia VALUES (10,3,1,'Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado','ISSSTE');"
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 install:
 #  - "pip install ."
   - "pip install -r requirements.txt"
 # command to run tests
-script: 
-  py.test --cov=prosperapp 
+script:
+  py.test --cov=prosperapp
 after_success:
     coveralls
