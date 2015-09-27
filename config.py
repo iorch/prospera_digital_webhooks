@@ -11,10 +11,10 @@ class Config(object):
         TESTING = False
     DATABASE_URI = None
     RAPIDPRO_TOKEN = os.getenv('RAPIDPRO_TOKEN')
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:' + \
-        os.getenv('PRODIWEBHOOKS_MYSQL_ENV_MYSQL_ROOT_PASSWORD') + \
-        '@' + os.getenv('PRODIWEBHOOKS_MYSQL_PORT_3306_TCP_ADDR') + \
-        '/dependencia'
+    #SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:' + \
+    #    os.getenv('PRODIWEBHOOKS_MYSQL_ENV_MYSQL_ROOT_PASSWORD') + \
+    #    '@' + os.getenv('PRODIWEBHOOKS_MYSQL_PORT_3306_TCP_ADDR') + \
+    #    '/dependencia'
 
 class ProductionConfig(Config):
     PRODUCTION = True

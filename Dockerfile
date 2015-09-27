@@ -12,6 +12,9 @@ RUN \
 # Add source
 ADD . /root/prospera_digital_webhooks
 
+RUN cd /root/prospera_digital_webhooks &&\
+  pip install -r requirements.txt
+
 # Default port
 EXPOSE 5001
 
