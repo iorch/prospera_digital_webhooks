@@ -21,7 +21,16 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:' + \
+        'root' + \
+        '@' + 'localhost' + \
+        '/user'
+
 
 class TestingConfig(Config):
     TESTING = True
     COVERALL_TOKEN = os.getenv('COVERALLS_REPO_TOKEN')
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:' + \
+        os.getenv('PRODIWEBHOOKS_MYSQL_ENV_MYSQL_ROOT_PASSWORD') + \
+        '@' + os.getenv('PRODIWEBHOOKS_MYSQL_PORT_3306_TCP_ADDR') + \
+        '/user'

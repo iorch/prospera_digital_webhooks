@@ -11,6 +11,7 @@ def app():
 
 @pytest.fixture
 def test_client(app):
+    app.config.from_object('config.TestingConfig')
     return app.test_client()
 
 def test_hello_get(test_client):
@@ -24,9 +25,9 @@ def test_hello_post(test_client):
 
 def test_translate_age(test_client):
     response = test_client.post('/translate_age',data=dict(
-        phone='+5211234567890'), follow_redirects=True)
+        phone='(206) 555-0104'), follow_redirects=True)
     assert json.loads(response.data)['birthdate']=='1992-10-30'
 
 def test_query(test_client):
-    response = test_client.get('/query?uuid=10&variables=descdependencia&variables=nomDependencia',)
-    assert json.loads(response.data.decode("utf-8"))['nomDependencia']=='ISSSTE'
+    response = test_client.get('/query?prosperaId=1511110987654321&variables=clues&variables=nom_mun',)
+    assert json.loads(response.data.decode("utf-8"))['nom_mun']=='GUADALAJARA'
