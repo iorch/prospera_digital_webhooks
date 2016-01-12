@@ -5,7 +5,8 @@ export LANG=C.UTF-8
 
 cd /root/prospera_digital_webhooks
 
-python py.test --cov=prosperapp.py
+pip install coveralls
+python -m py.test --cov=prosperapp.py
 COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN coveralls
 
 python prosperapp.py
