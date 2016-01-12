@@ -5,6 +5,5 @@ pymysql
 Flask-SQLAlchemy
 python-coveralls
 pytest-cov
-logging
 datetime
 pandas
