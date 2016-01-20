@@ -3,12 +3,10 @@
 
 from flask import (Flask, jsonify, url_for, stream_with_context, request,
                    Response, make_response, current_app)
-import json
 import requests
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from datetime import timedelta
 import sys
 
 sys.path.append(os.path.dirname(__file__))
@@ -17,6 +15,9 @@ from datetime import timedelta
 from functools import update_wrapper
 import pandas as pd
 import random
+import beanstalkc
+import json
+import datetime
 
 data_df = pd.read_csv('data.txt')
 
@@ -28,6 +29,8 @@ app.logger.setLevel(logging.DEBUG)
 app.logger.addHandler(file_handler)
 db.init_app(app)
 
+beanstalk_send = beanstalkc.Connection(host='127.0.0.1', port=11300)
+beanstalk_send.use('whatsapp-send')
 
 def crossdomain(origin=None, methods=None, headers=None,
                 max_age=21600, attach_to_all=True,
@@ -184,6 +187,34 @@ def get_info():
     app.logger.debug(answer)
 
     return (answer, 200)
+
+@app.route('/pdys', methods = ['POST'])
+def pdys():
+    data = request.args
+    timestamp = str(datetime.datetime.utcnow())
+    to_send = {"type": "simple",
+                   "address": '521'+data['to']+'@s.whatsapp.net',
+                   "body": data['text'],
+                   "timestamp": timestamp}
+    answer = json.dumps(request.args)
+    message = json.dumps(to_send)
+    beanstalk_send.put(message)
+    #https://rapidpro.io/handlers/external/sent/b1435baa-abbd-4e8f-8b4a-3e252acefe52/
+    return (answer, 200)
+
+@app.route('/answer_rp', methods=['POST'])
+def answer_rp():
+    data = json.dumps(request.form,ensure_ascii=False).encode('utf8')
+    app.logger.debug(data)
+    r = requests.post('https://rapidpro.io/handlers/external/sent/b1435baa-abbd-4e8f-8b4a-3e252acefe52/',
+                      data=data)
+    answer = 'OK'
+    return (answer, 200)
+
+
+
+#@app.route('/whatsapp_received', methods = ['POST'])
+#def whatsapp_received():
 
 
 if __name__ == '__main__':
