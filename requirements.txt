@@ -7,3 +7,4 @@ python-coveralls
 pytest-cov
 datetime
 pandas
+beanstalkc
