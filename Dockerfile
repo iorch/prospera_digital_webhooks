@@ -28,11 +28,11 @@ RUN apt-get update -y && \
     beanstalkd \
     python3-tk \
     wget \
+    unzip \
     git
 
 RUN wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate && \
     python get-pip.py
-
 
 # Add source
 ADD . /root/prospera_digital_webhooks
@@ -43,6 +43,7 @@ RUN cd /root/prospera_digital_webhooks &&\
 
 RUN python3 get-pip.py && \
     pip3 install -U setuptools &&\
+    pip3 install requests &&\
     pip3 install pystalkd &&\
     pip3 install -Iv protobuf==3.0.0-alpha-1 && \
     pip3 install git+https://github.com/tgalal/yowsup@master
