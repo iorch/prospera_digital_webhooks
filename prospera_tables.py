@@ -10,4 +10,19 @@ class User(db.Model):
 
     def __init__(self,prosperaId = 0):
         self.prosperaId = prosperaId
-#end
+
+class Message(db.Model):
+    __tablename__ = 'message'
+    phoneId = db.Column(db.BigInteger, primary_key=True)
+    messageId = db.Column(db.String(255), index=True)
+    message_text = db.Column(db.String(255), index=True)
+    datetime = db.Column(db.String(255), index=True)
+    def __init__(self,phoneId = 0,messageId = '',message_text = '', datetime = ''):
+        self.phoneId = phoneId
+        self.messageId = messageId
+        self.message_text = message_text
+        self.datetime = datetime
+
+    def get_message_text(self):
+        return(self.message_text)
+#end#end
