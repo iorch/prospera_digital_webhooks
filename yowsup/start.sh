@@ -9,10 +9,18 @@ beanstalkd -l 127.0.0.1 -p 11300 &
 
 python3 run.py &
 
-sleep 5
+sleep 30
 
 ps aux| grep python3 | awk '{print $2}'|xargs kill -9
 
+python3 run.py > /log.log &
+
+cd /root/prospera_digital_webhooks/yowsup
+python3 beanstalk-pd.py > messages.log
+sleep 30
+ps aux| grep python3 | awk '{print $2}'|xargs kill -9
+
+cd /yowsup-queue
 python3 run.py > /log.log &
 
 cd /root/prospera_digital_webhooks/yowsup
