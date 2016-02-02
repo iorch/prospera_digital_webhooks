@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# encoding=utf8
 
 from flask import (Flask, jsonify, url_for, stream_with_context, request,
                    Response, make_response, current_app)
@@ -8,9 +8,9 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 import sys
-
+import time
 sys.path.append(os.path.dirname(__file__))
-from prospera_users import User, db
+from prospera_tables import User, Message, db
 from datetime import timedelta
 from functools import update_wrapper
 import pandas as pd
@@ -20,6 +20,9 @@ import json
 import datetime
 
 data_df = pd.read_csv('data.txt')
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
@@ -193,22 +196,52 @@ def pdys():
     data = request.args
     timestamp = str(datetime.datetime.utcnow())
     to_send = {"type": "simple",
-                   "address": '521'+data['to']+'@s.whatsapp.net',
-                   "body": data['text'],
-                   "timestamp": timestamp}
+                "address": '521'+data['to']+'@s.whatsapp.net',
+                "body": data['text'],
+                "timestamp": timestamp}
     answer = json.dumps(request.args)
     message = json.dumps(to_send)
     beanstalk_send.put(message)
-    #https://rapidpro.io/handlers/external/sent/b1435baa-abbd-4e8f-8b4a-3e252acefe52/
+    url_received = 'https://rapidpro.io/handlers/external/received/f9a56bab-5035-4476-9051-a65b532aae95/'
+    sent_by = data['from']
+    text = data['text']
+    #r = requests.post(url_received,)
     return (answer, 200)
 
-@app.route('/answer_rp', methods=['POST'])
-def answer_rp():
-    data = json.dumps(request.form,ensure_ascii=False).encode('utf8')
+@app.route('/message_received', methods=['POST'])
+def message_received():
+    data = request.json
     app.logger.debug(data)
-    r = requests.post('https://rapidpro.io/handlers/external/sent/b1435baa-abbd-4e8f-8b4a-3e252acefe52/',
-                      data=data)
-    answer = 'OK'
+    phoneId = data[u'from']
+    message_text = data[u'text']
+    datetime = data[u'date']
+    message = Message(phoneId = phoneId,
+                      message_text = message_text,
+                      datetime = datetime)
+    db.session.add(message)
+    db.session.commit()
+    url = 'https://rapidpro.io/handlers/external/received/9289edbc-f5c9-46a7-82f9-d210ed3d3a48/'
+    r = requests.post(url+"from="+phoneId+"&text="+message_text+"&date="+datetime)
+    answer = r.text
+    return (answer, 200)
+
+@app.route('/answer_rp', methods=['GET'])
+def answer_rp():
+    app.logger.debug(request.args)
+    message = Message()
+    phoneId = request.args.get('to')
+    query = None
+    waiting = 0
+    while (query==None):
+        query = Message.query.filter_by(phoneId=phoneId).first()
+        time.sleep(20)
+        waiting += 1
+        if (waiting > 6):
+            break
+    result = {
+        'text': query.get_message_text()
+    }
+    answer = json.dumps(result, ensure_ascii=False).encode('utf8')
     return (answer, 200)
 
 
