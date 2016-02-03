@@ -36,7 +36,7 @@ def test_hello_post(test_client):
 
 def test_translate_age(test_client):
     response = test_client.post('/translate_age', data=dict(
-        phone=os.environ.get('PD2_PHONENUM'), follow_redirects=True)
+        phone=os.environ.get('PD2_PHONENUM')), follow_redirects=True)
     assert json.loads(response.data)['birthdate'] == '1992-10-30'
 
 
