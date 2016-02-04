@@ -3,11 +3,11 @@
 docker run \
 --name prodiwebhooks_mysql \
 -e MYSQL_ROOT_PASSWORD=$MY_MYSQL_ROOT_PASSWORD \
--p 3306:3306 -d mysql
+-p 3307:3306 -d mysql
 
 sleep 8
-mysql -uroot -h 192.168.99.100 -proot < test.sql
-mysql -uroot -h 192.168.99.100 -proot < messages.sql
+docker exec -i prodiwebhooks_mysql mysql -uroot -p$MY_MYSQL_ROOT_PASSWORD < test.sql
+docker exec -i prodiwebhooks_mysql mysql -uroot -p$MY_MYSQL_ROOT_PASSWORD < messages.sql
 
 docker run \
 --name mxabierto-prospera_digital_webhooks \
